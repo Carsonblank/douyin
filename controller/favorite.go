@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"douyin/common"
 	dtb "douyin/database"
 	"fmt"
 	"net/http"
@@ -14,6 +15,15 @@ import (
 func FavoriteAction(db *gorm.DB) gin.HandlerFunc {
 	fun := func(c *gin.Context) {
 		token := c.Query("token")
+		//查看token是否合法
+		if !common.TokenValidity(token) {
+			c.JSON(http.StatusOK, Response{
+				StatusCode: 1,
+				StatusMsg:  "Token is invalid.",
+			},
+			)
+			return
+		}
 
 		if user, exist := dtb.UserQueryByToken(db, token); exist {
 			video_id, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)

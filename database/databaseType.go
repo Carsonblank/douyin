@@ -8,10 +8,10 @@ import (
 
 //用户信息
 type User struct {
-	Id        int64  `gorm:"primaryKey;autoIncrement"`        //用户唯一标志符号
-	Name      string `gorm:"type:varchar(32);not null;index"` //用户名
-	Password  string `gorm:"type:varchar(32);not null"`       //用户密码
-	Token     string `gorm:"not null, index"`                 //用户鉴权Token
+	Id        int64  `gorm:"primaryKey;autoIncrement"`         //用户唯一标志符号
+	Name      string `gorm:"type:varchar(128);not null;index"` //用户名
+	Password  string `gorm:"type:varchar(128);not null"`       //用户密码
+	Token     string `gorm:"not null, index"`                  //用户鉴权Token
 	Avatar    string //用户头像链接Url
 	Signature string //用户个性签名
 }

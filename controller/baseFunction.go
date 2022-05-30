@@ -2,7 +2,10 @@
 package controller
 
 import (
+	"crypto/sha256"
+	"douyin/common"
 	dtb "douyin/database"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -48,7 +51,14 @@ func FromDBUsersTOMesUsers(db *gorm.DB, userList_db []dtb.User, userId int64) []
 }
 
 //根据用户名和密码生成token
-func GetToken(username, password string) (token string) {
-	token = username + password
+func GetToken(username string) (token string, err error) {
+	token, err = common.ReleaseToken(username)
 	return
+}
+
+//密码加密，生成哈希值，用转化为十六进制，并用string类型进行保存
+func Encryption(passwd string) string {
+	h := sha256.New()
+	h.Write([]byte(passwd))
+	return fmt.Sprintf("%x", h.Sum(nil))
 }

@@ -2,7 +2,7 @@ package controller
 
 import (
 	dtb "douyin/database"
-	"log"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -14,7 +14,9 @@ import (
 func UserInfo(db *gorm.DB) gin.HandlerFunc {
 	fun := func(c *gin.Context) {
 		var token_user_id int64
-		if users, exit := dtb.UserQueryByToken(db, c.Query("token")); exit {
+		tokenString := c.Query("token")
+
+		if users, exit := dtb.UserQueryByToken(db, tokenString); exit {
 			token_user_id = users[0].Id
 		} else {
 			token_user_id = 0
@@ -40,7 +42,8 @@ func UserInfo(db *gorm.DB) gin.HandlerFunc {
 func Register(db *gorm.DB) gin.HandlerFunc {
 	fun := func(c *gin.Context) {
 		username := c.Query("username")
-		password := c.Query("password")
+
+		password := Encryption(c.Query("password"))
 
 		if _, exist := dtb.UserQueryByName(db, username); exist {
 			c.JSON(http.StatusOK, UserLoginResponse{
@@ -55,16 +58,29 @@ func Register(db *gorm.DB) gin.HandlerFunc {
 			if signature == "" {
 				signature = "Hello douyin"
 			}
+			tokenString, err := GetToken(username)
+			if err != nil {
+				c.JSON(http.StatusOK, UserLoginResponse{
+					Response: Response{
+						StatusCode: 1,
+						StatusMsg:  fmt.Sprintf("Token release error:%v", err),
+					}})
+				return
+			}
 			user := dtb.User{
 				Name:      username,
 				Password:  password,
-				Token:     GetToken(username, password),
+				Token:     tokenString,
 				Avatar:    avator,
 				Signature: signature,
 			}
-			err := dtb.UserCreate(db, &user)
+			err = dtb.UserCreate(db, &user)
 			if err != nil {
-				log.Printf("User create error : %v \n", err)
+				c.JSON(http.StatusOK, UserLoginResponse{
+					Response: Response{
+						StatusCode: 1,
+						StatusMsg:  fmt.Sprintf("User regist error:%v", err),
+					}})
 			} else {
 				c.JSON(http.StatusOK, UserLoginResponse{
 					Response: Response{
@@ -82,12 +98,23 @@ func Register(db *gorm.DB) gin.HandlerFunc {
 func Login(db *gorm.DB) gin.HandlerFunc {
 	fun := func(c *gin.Context) {
 		username := c.Query("username")
-		password := c.Query("password")
+		password := Encryption(c.Query("password"))
 		if user, exist := dtb.UserValid(db, username, password); exist {
+			//每次登陆都会更新token
+			tokenString, err := dtb.UpdateToken(db, user[0].Id, username)
+			if err != nil {
+				c.JSON(http.StatusOK, UserLoginResponse{
+					Response: Response{
+						StatusCode: 1,
+						StatusMsg:  fmt.Sprintf("Token update error:%v", err),
+					},
+				})
+				return
+			}
 			c.JSON(http.StatusOK, UserLoginResponse{
 				Response: Response{StatusCode: 0},
 				UserId:   user[0].Id,
-				Token:    user[0].Token,
+				Token:    tokenString,
 			})
 		} else {
 			c.JSON(http.StatusOK, UserLoginResponse{

@@ -2,6 +2,7 @@
 package controller
 
 import (
+	"douyin/common"
 	dtb "douyin/database"
 	"fmt"
 	"net/http"
@@ -15,6 +16,17 @@ import (
 func RelationAction(db *gorm.DB) gin.HandlerFunc {
 	fun := func(c *gin.Context) {
 		token := c.Query("token")
+
+		//查看token是否合法
+		if !common.TokenValidity(token) {
+			c.JSON(http.StatusOK, Response{
+				StatusCode: 1,
+				StatusMsg:  "Token is invalid.",
+			},
+			)
+			return
+		}
+
 		if user, exist := dtb.UserQueryByToken(db, token); exist {
 			to_user_id, _ := strconv.ParseInt(c.Query("to_user_id"), 10, 64)
 			if _, exist := dtb.UserQueryByID(db, to_user_id); !exist {

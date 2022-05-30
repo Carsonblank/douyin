@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"douyin/common"
 	dtb "douyin/database"
 	"fmt"
 	"log"
@@ -15,7 +16,16 @@ import (
 func Publish(db *gorm.DB) gin.HandlerFunc {
 	fun := func(c *gin.Context) {
 		token := c.PostForm("token")
-		fmt.Printf("token = %v\n", token)
+
+		//查看token是否合法
+		if !common.TokenValidity(token) {
+			c.JSON(http.StatusOK, Response{
+				StatusCode: 1,
+				StatusMsg:  "Token is invalid.",
+			},
+			)
+			return
+		}
 		if _, exist := dtb.UserQueryByToken(db, token); !exist {
 			c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 			return
