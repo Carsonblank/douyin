@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"douyin/common"
 	"douyin/config"
 	"douyin/controller"
 	dtb "douyin/database" //database model type
@@ -14,11 +15,11 @@ import (
 
 func main() {
 
-	db := initDatabase()
+	common.DB = initDatabase()
 
 	r := gin.Default()
 
-	initRouter(r, db)
+	initRouter(r)
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
@@ -37,32 +38,33 @@ func initDatabase() (db *gorm.DB) {
 	db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").AutoMigrate(&dtb.Favorite{})
 	db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").AutoMigrate(&dtb.Comment{})
 	db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").AutoMigrate(&dtb.Relation{})
+
 	return
 }
 
-func initRouter(r *gin.Engine, db *gorm.DB) {
+func initRouter(r *gin.Engine) {
 	// public directory is used to serve static resources
 	r.Static("/static", "./public")
 
 	apiRouter := r.Group("/douyin")
 
 	// basic apis
-	apiRouter.GET("/feed/", controller.Feed(db))
-	apiRouter.GET("/user/", controller.UserInfo(db))
-	apiRouter.POST("/user/register/", controller.Register(db))
-	apiRouter.POST("/user/login/", controller.Login(db))
-	apiRouter.POST("/publish/action/", controller.Publish(db))
-	apiRouter.GET("/publish/list/", controller.PublishList(db))
+	apiRouter.GET("/feed/", controller.Feed)
+	apiRouter.GET("/user/", controller.UserInfo)
+	apiRouter.POST("/user/register/", controller.Register)
+	apiRouter.POST("/user/login/", controller.Login)
+	apiRouter.POST("/publish/action/", controller.Publish)
+	apiRouter.GET("/publish/list/", controller.PublishList)
 	//
 	//// extra apis - I
-	apiRouter.POST("/favorite/action/", controller.FavoriteAction(db))
-	apiRouter.GET("/favorite/list/", controller.FavoriteList(db))
-	apiRouter.POST("/comment/action/", controller.CommentAction(db))
-	apiRouter.GET("/comment/list/", controller.CommentList(db))
+	apiRouter.POST("/favorite/action/", controller.FavoriteAction)
+	apiRouter.GET("/favorite/list/", controller.FavoriteList)
+	apiRouter.POST("/comment/action/", controller.CommentAction)
+	apiRouter.GET("/comment/list/", controller.CommentList)
 	//
 	//// extra apis - II
-	apiRouter.POST("/relation/action/", controller.RelationAction(db))
-	apiRouter.GET("/relation/follow/list/", controller.FollowList(db))
-	apiRouter.GET("/relation/follower/list/", controller.FollowerList(db))
+	apiRouter.POST("/relation/action/", controller.RelationAction)
+	apiRouter.GET("/relation/follow/list/", controller.FollowList)
+	apiRouter.GET("/relation/follower/list/", controller.FollowerList)
 
 }

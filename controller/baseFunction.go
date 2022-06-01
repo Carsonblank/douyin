@@ -21,8 +21,8 @@ func FromDBVideosToMesVideos(db *gorm.DB, videoList_db []dtb.Video, userId int64
 			Author:        FromDBUsersTOMesUsers(db, user_db, userId)[0],
 			PlayUrl:       v.PlayUrl,
 			CoverUrl:      v.CoverUrl,
-			FavoriteCount: dtb.VideoFavoriteCount(db, v.Id),
-			CommentCount:  dtb.VideoCommentCount(db, v.Id),
+			FavoriteCount: v.Favorite_count, //dtb.VideoFavoriteCount(db, v.Id),
+			CommentCount:  v.Comment_count,  //dtb.VideoCommentCount(db, v.Id),
 			IsFavorite:    dtb.FavoriteQueryByUserAndVideo(db, userId, v.Id),
 			Title:         v.Title,
 		})
@@ -37,13 +37,13 @@ func FromDBUsersTOMesUsers(db *gorm.DB, userList_db []dtb.User, userId int64) []
 		users = append(users, User{
 			Id:            u.Id,
 			Name:          u.Name,
-			FollowCount:   dtb.UserFollowCount(db, u.Id),
-			FollowerCount: dtb.UserFollowerCount(db, u.Id),
+			FollowCount:   u.Follow_count,   //dtb.UserFollowCount(db, u.Id),
+			FollowerCount: u.Follower_count, //dtb.UserFollowerCount(db, u.Id),
 			IsFollow:      dtb.FavoriteQueryByUserAndUser(db, userId, u.Id),
 			Avatar:        u.Avatar,
 			Signature:     u.Signature,
-			TotalFavorite: dtb.UserFavoritedCount(db, u.Id),
-			FavoriteCount: dtb.UserFavoriteCount(db, u.Id),
+			TotalFavorite: u.Total_favorite, ///dtb.UserFavoritedCount(db, u.Id),
+			FavoriteCount: u.Favorite_count, //dtb.UserFavoriteCount(db, u.Id),
 		})
 
 	}
@@ -51,8 +51,8 @@ func FromDBUsersTOMesUsers(db *gorm.DB, userList_db []dtb.User, userId int64) []
 }
 
 //根据用户名和密码生成token
-func GetToken(username string) (token string, err error) {
-	token, err = common.ReleaseToken(username)
+func GetToken(username string, user_id int64) (token string, err error) {
+	token, err = common.ReleaseToken(username, user_id)
 	return
 }
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"douyin/config"
+	"douyin/controller"
 	dtb "douyin/database"
 	"fmt"
 	"log"
@@ -21,8 +22,7 @@ func main() {
 	if _, exist := dtb.UserQueryByName(db, "DefaultUser"); !exist {
 		user := dtb.User{
 			Name:      "DefaultUser",
-			Password:  "123456",
-			Token:     "DefaultUser123456",
+			Password:  controller.Encryption("123456"),
 			Avatar:    "http://192.168.139.131:8080/static/defaultAvatar.png",
 			Signature: "Hello douyin",
 		}

@@ -9,12 +9,15 @@ import (
 )
 
 //根据videoId查看video是否存在
-func VideoQueryByID(db *gorm.DB, video_id int64) (exist bool) {
-	var nums int64
-	if db.Table("videos").Select("count(*)").Where("id = ?", video_id).Scan(&nums); nums > 0 {
+func VideoQueryByID(db *gorm.DB, video_id int64) (exist bool, user_id int64) {
+	var v []Video
+	db.Where("id = ? ", video_id).Find(&v)
+	if len(v) > 0 {
 		exist = true
+		user_id = v[0].UserId
 	} else {
 		exist = false
+		user_id = 0
 	}
 	return
 
@@ -65,6 +68,7 @@ func UserValid(db *gorm.DB, username, password string) (user []User, exist bool)
 	return
 }
 
+/*
 //根据token查找user
 func UserQueryByToken(db *gorm.DB, token string) (user []User, exist bool) {
 	if db.Limit(1).Where("token = ?", token).Find(&user); len(user) > 0 {
@@ -74,7 +78,7 @@ func UserQueryByToken(db *gorm.DB, token string) (user []User, exist bool) {
 	}
 	return
 }
-
+*/
 //根据video_id查找user
 func UserQueryByVideoID(db *gorm.DB, video_id int64) (user_id int64) {
 	db.Table("videos").Select("user_id").Where("id = ? ", video_id).Scan(&user_id)
