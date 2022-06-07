@@ -57,12 +57,13 @@ func Publish(c *gin.Context) {
 		})
 		return
 	}
+	//使用ffmpeg获取封面
+	coverName := service.FfmpegCreateCover(saveFile)
 	//更新Video数据库
 	if err := repository.VideoCreate(database.Video{
-		UserId:  userId,
-		PlayUrl: "http://192.168.139.131:8080/static/" + finalName,
-		//使用默认封面，默认封面为public文件夹中的defaultVideoCover.png
-		CoverUrl: "http://192.168.139.131:8080/static/defaultVideoCover.png",
+		UserId:   userId,
+		PlayUrl:  "http://192.168.139.131:8080/static/" + finalName,
+		CoverUrl: "http://192.168.139.131:8080/static/" + filepath.Base(coverName),
 		Title:    c.PostForm("title"),
 	}); err != nil {
 		//数据库对象创建失败，返回错误响应
