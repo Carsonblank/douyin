@@ -10,9 +10,22 @@
 ## config文件夹
 + config包
     配置文件
-    + 数据库DSN `DSN= "userName:password@tcp(ip:port)/databseName?charset=utf8&parseTime=True&loc=Local"`
-    + feed视频流最大视频数量 `MustVideosNums = 30`
-    + 服务端口 `DouyinPort     = "localhost:8080"`
+    config.init
+    + [server]gin配置
+        + HTTP_PORT 端口号
+        + HTTP_HOST  ip地址
+        + MODE 开启模式，debug/release
+    + [mysql]数据库配置，目前只支持mysql数据库
+        + USER 用户名
+        + PASSWORD 密码
+        + DB_HOST 数据库IP地址
+        + DB_PORT 数据库端口
+        + DB_NAME 数据库名称
+        + CHARSET 编码方式
+        + ParseTime 时间设置
+        + Loc 时区
+    + [otherInfo] 其他参数，目前只有一个控制视频流最大视频数量
+        + MAX_FEED_VIDEO_NUMS feed视频流最大视频数量
 
 ## public文件夹
     保存视频文件
