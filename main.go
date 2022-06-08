@@ -1,6 +1,7 @@
 package main
 
 import (
+	"douyin/config"
 	"douyin/src/controller"
 	"douyin/src/database"
 	"fmt"
@@ -11,11 +12,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func init() {
+	//获取数据库配置信息
+	config.GetMySQLConfig()
+	//服务器配置
+	config.GetServerConfig()
+	//其他信息
+	config.GetFeedNums()
+}
+
 func main() {
 
 	database.InitDatabase()
 	//设置release模式
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(config.GIN_MODE)
 	//设置debug模式
 	//gin.SetMode(gin.DebugMode)
 	//开启高亮
@@ -30,7 +40,7 @@ func main() {
 
 	initRouter(r)
 
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run(config.DouyinPort) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
 
 func initRouter(r *gin.Engine) {
