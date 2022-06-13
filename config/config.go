@@ -63,7 +63,7 @@ func GetMySQLConfig() {
 		log.Printf("Fail to map MySQL: %v \n", err)
 		os.Exit(1)
 	}
-	//DSN = "douyin:123456@tcp(127.0.0.1:3306)/douyindata?charset=utf8&parseTime=True&loc=Local"
+	//DSN = "douyin:123456@tcp(:3306)/douyindata?charset=utf8&parseTime=True&loc=Local"
 	DSN = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=%s&loc=%s",
 		d.USER,
 		d.PASSWORD,

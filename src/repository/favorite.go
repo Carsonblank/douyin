@@ -51,11 +51,11 @@ func FavoriteUpdataNumbers(videoId, videoUserId, userId int64, add bool) error {
 		return err
 	}
 	//更新video用户获赞数
-	if err := database.MySqlDb.Model(&database.User{}).Where("id = ?", videoId).Update("total_favorite", gorm.Expr("total_favorite + ?", n)).Error; err != nil {
+	if err := database.MySqlDb.Model(&database.User{}).Where("id = ?", videoUserId).Update("total_favorite", gorm.Expr("total_favorite + ?", n)).Error; err != nil {
 		return err
 	}
 	//更新token用户喜欢数
-	if err := database.MySqlDb.Model(&database.User{}).Where("id = ?", videoId).Update("favorite_count", gorm.Expr("favorite_count + ?", n)).Error; err != nil {
+	if err := database.MySqlDb.Model(&database.User{}).Where("id = ?", userId).Update("favorite_count", gorm.Expr("favorite_count + ?", n)).Error; err != nil {
 		return err
 	}
 	return nil
